@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import { useRouter } from 'next/router'
 import React from 'react'
 import styles from '../styles/Home.module.scss'
 
@@ -38,7 +37,7 @@ const SpecificPokemon = ({ pokeInfo }: SpecificPokemonProps) => {
 }
 
 export async function getStaticPaths() {
-  const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=10&offset=0')
+  const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=100&offset=0')
   const data = await res.json()
   const pokemons = data.results
 

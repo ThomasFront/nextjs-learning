@@ -13,28 +13,17 @@ type HomePageProps = {
 }
 
 export default function HomePage({ data, previous, next }: HomePageProps) {
+  const [quantity, setQuantity] = useState(20)
   const [listOfPokemons, setListOfPokemons] = useState(data)
-  const [nextPage, setNextPage] = useState(next)
-  const [prevPage, setPrevPage] = useState(previous)
-
-  const changeNextPage = async () => {
-    if (nextPage) {
-      const res = await fetch(nextPage as string)
-      const data = await res.json()
-      setNextPage(data.next)
-      setListOfPokemons(data.results)
-      setPrevPage(data.previous)
-    }
-  }
+  const [loading, setLoading] = useState(false)
 
   const changePreviousPage = async () => {
-    if (prevPage) {
-      const res = await fetch(prevPage)
-      const data = await res.json()
-      setNextPage(data.next)
-      setListOfPokemons(data.results)
-      setPrevPage(data.previous)
-    }
+    setLoading(true)
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${quantity}&offset=0`)
+    const data = await res.json()
+    setListOfPokemons(data.results)
+    setQuantity(prev => prev + 10)
+    setLoading(false)
   }
 
   return (
@@ -54,8 +43,7 @@ export default function HomePage({ data, previous, next }: HomePageProps) {
           })}
         </div>
         <div className={styles.buttonContainer}>
-          <button disabled={!prevPage} onClick={changePreviousPage}>prev</button>
-          <button disabled={!nextPage} onClick={changeNextPage}>next</button>
+          <button disabled={loading} onClick={changePreviousPage}>MORE</button>
         </div>
       </main>
     </>
