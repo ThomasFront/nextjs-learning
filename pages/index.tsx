@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import { useState } from 'react'
 import styles from '../styles/Home.module.scss'
 
 type HomePageProps = {
@@ -12,6 +13,30 @@ type HomePageProps = {
 }
 
 export default function HomePage({ data, previous, next }: HomePageProps) {
+  const [listOfPokemons, setListOfPokemons] = useState(data)
+  const [nextPage, setNextPage] = useState(next)
+  const [prevPage, setPrevPage] = useState(previous)
+
+  const changeNextPage = async () => {
+    if (nextPage) {
+      const res = await fetch(nextPage as string)
+      const data = await res.json()
+      setNextPage(data.next)
+      setListOfPokemons(data.results)
+      setPrevPage(data.previous)
+    }
+  }
+
+  const changePreviousPage = async () => {
+    if (prevPage) {
+      const res = await fetch(prevPage)
+      const data = await res.json()
+      setNextPage(data.next)
+      setListOfPokemons(data.results)
+      setPrevPage(data.previous)
+    }
+  }
+
   return (
     <>
       <Head>
@@ -23,14 +48,14 @@ export default function HomePage({ data, previous, next }: HomePageProps) {
       <main className={styles.main}>
         <div className={styles.list}>
           <h1>All pokemons</h1>
-          {data.map(pokemon => {
+          {listOfPokemons.map(pokemon => {
             const id = pokemon.url.split('/')[6]
             return <Link href={`/${id}`} key={pokemon.name}>{pokemon.name}</Link>
           })}
         </div>
         <div className={styles.buttonContainer}>
-          <button disabled={!previous}>prev</button>
-          <button disabled={!next}>next</button>
+          <button disabled={!prevPage} onClick={changePreviousPage}>prev</button>
+          <button disabled={!nextPage} onClick={changeNextPage}>next</button>
         </div>
       </main>
     </>
